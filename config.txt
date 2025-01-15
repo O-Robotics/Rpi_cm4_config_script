@@ -1,0 +1,15 @@
+# Enable USB OTG (to support USB host mode)
+dtoverlay=dwc2,dr_mode=host
+
+# Set HDMI output to 720p
+hdmi_group=1
+hdmi_mode=4
+
+# Enable I2C
+dtparam=i2c_arm=on
+
+# Enable SPI
+dtparam=spi=on
+
+# Enable 1-Wire
+dtoverlay=w1-gpio
