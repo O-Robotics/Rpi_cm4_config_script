@@ -1,1 +1,6 @@
-# Rpi_cm4_config
+- `Config.txt` is for Rpi hardware level
+- Script is for software level
+  - `Setup_rpi.sh`: Contains ROS 2 and dependencies
+    - You need to change the password for `dev`, before running the script.
+    - Do not contain: foxglove, ssh key
+    - Contains: ROS 2 control. GNSS packages
