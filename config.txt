@@ -13,3 +13,11 @@ dtparam=spi=on
 
 # Enable 1-Wire
 dtoverlay=w1-gpio
+
+# Enable UART for RS485
+dtoverlay=uart3
+dtoverlay=uart5
+
+# Enable SPI and configure CAN bus
+dtparam=spi=on
+dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
