@@ -20,11 +20,12 @@ echo "Setting password for 'dev'"
 echo "dev:password" | sudo chpasswd  # Replace 'password' with a secure password
 sudo usermod -aG sudo dev  # Add user to sudo group (if necessary)
 
-# Configure Git (set up user information for Git commits)
-echo "Configuring Git user"
-sudo -u dev git config --global user.name "Dev User"
-sudo -u dev git config --global user.email "dev@example.com"  # Replace with actual email
+# # Configure Git (set up user information for Git commits)
+# echo "Configuring Git user"
+# sudo -u dev git config --global user.name "Dev User"
+# sudo -u dev git config --global user.email "dev@example.com"  # Replace with actual email
 
+# ------------ Tailscale ------------ 
 # Install Tailscale for remote network access
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/jammy.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
@@ -32,11 +33,34 @@ sudo apt-get update
 sudo apt-get install -y tailscale
 sudo tailscale up
 
+# ------------ CAN ------------ 
+# Install CAN utilities
+echo "Installing CAN utilities..."
+sudo apt-get install -y can-utils
+
+# Set up CAN interface
+echo "Configuring CAN interface..."
+sudo ip link set can0 up type can bitrate 1000000
+sudo ifconfig can0 txqueuelen 65536
+
+# Test CAN bus communication
+echo "Testing CAN bus communication..."
+dmesg | grep spi0
+ifconfig can0
+
+# Test sending and receiving CAN data
+candump can0 &  # Start receiving data in the background
+sleep 2
+cansend can0 000#11.22.33.44
+echo "CAN test completed. Check the candump output for received data."
+
+# ------------ Wifi ------------ 
 # # Connect to Wifi (if needed, replace <ESSID_NAME> and <ESSID_PASSWORD>)
 # # Replace these with the correct SSID and password for your network
 # echo "Connecting to WiFi..."
 # sudo nmcli dev wifi connect <ESSID_NAME> password <ESSID_PASSWORD>
 
+# ------------ Modem ------------ 
 # Setup Modem (for 4G modem connection)
 sudo apt-get install minicom
 sudo minicom -D /dev/ttyUSB2
@@ -46,6 +70,7 @@ echo "AT+CUSBPIDSWITCH=9011,1,1"
 echo "Press ctrl-A X to exit minicom"
 sudo dhclient -v usb0
 
+# ------------ ROS 2 ------------ 
 # Install ROS2 Humble
 sudo apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
 sudo apt install -y python3-colcon-common-extensions
