@@ -7,7 +7,7 @@ sudo apt update
 sudo apt upgrade -y
 
 # Install essential tools
-sudo apt install -y openssh-server curl git minicom python3-pip
+sudo apt install -y openssh-server curl git minicom python3-pip software-properties-common p7zip
 
 # Setup SSH for remote access
 sudo systemctl enable ssh
@@ -50,23 +50,35 @@ sleep 2
 cansend can0 000#11.22.33.44
 echo "CAN test completed. Check the candump output for received data."
 
-# ------------ WiFi ------------ 
-# # Connect to Wifi (if needed, replace <ESSID_NAME> and <ESSID_PASSWORD>)
-# # Replace these with the correct SSID and password for your network
-# echo "Connecting to WiFi..."
-# sudo nmcli dev wifi connect <ESSID_NAME> password <ESSID_PASSWORD>
+# ------------ ROS 2 Installation ------------ 
+# Check and set locale to UTF-8
+echo "Checking and setting locale to UTF-8"
+sudo apt install locales
+sudo locale-gen en_US en_US.UTF-8
+sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
+locale  # Verify locale settings
 
-# # ------------ Modem ------------ 
-# # Setup Modem (for 4G modem connection)
-# sudo apt-get install minicom
-# sudo minicom -D /dev/ttyUSB2
-# echo "Enter the following commands to configure the modem:"
-# echo "ATE1"
-# echo "AT+CUSBPIDSWITCH=9011,1,1"
-# echo "Press ctrl-A X to exit minicom"
-# sudo dhclient -v usb0
+# Enable Ubuntu Universe repository
+sudo add-apt-repository universe
 
-# ------------ ROS 2 ------------ 
+# Add ROS 2 GPG key and repository
+echo "Setting up ROS 2 repository"
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+# Install base and dev tools
+sudo apt install -y ros-humble-ros-base
+sudo apt install -y ros-dev-tools
+
+# Set up ROS 2 environment automatically on terminal start
+echo "Setting up ROS 2 environment"
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
+source /opt/ros/humble/setup.bash
+
+
+# ------------ ROS 2 Dependencies------------ 
 # Install ROS2 Humble
 sudo apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
 sudo apt install -y python3-colcon-common-extensions
@@ -77,12 +89,7 @@ cd ros2_ws
 colcon build --symlink-install
 
 # ------------ foxglove ------------ 
-# # Install foxglove dependencies
 # sudo apt install -y ros-humble-foxglove-bridge
-
-# Set up ROS2 environment automatically on terminal start
-echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
-echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
 
 # ------------ git ------------ 
 # Install Git (if not already installed)
