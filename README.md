@@ -6,3 +6,13 @@
     - You need to change the password for `dev` before running the script.
     - Do not contain: foxglove, ssh key
     - Contains: ROS 2 control, GNSS packages
+      
+  How to use? Clone script and give permission:
+  ```
+  chmod +x setup_rpi.sh
+  ```
+  Run it:
+  ```
+  sudo ./setup_rpi.sh
+  ```
+
