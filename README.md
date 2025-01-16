@@ -18,7 +18,7 @@
   * During the process, tailscale will provide a link to login. Copy it to browser then `Ctrl C` to continue.
   
 #### Other steps
-Besides, you need to manually add minicom it will stuck otherwise the bash process.
+Besides, you need to manually add minicom, otherwise it will stuck the bash process.
 ```
 # ------------ Modem ------------ 
 # Setup Modem (for 4G modem connection)
