@@ -13,17 +13,13 @@ sudo apt install -y openssh-server curl git minicom python3-pip
 sudo systemctl enable ssh
 sudo systemctl start ssh
 
+# ------------ dev ------------ 
 # Create a new user (change 'dev' to any desired username)
 echo "Creating user 'dev'"
 sudo useradd -m -s /bin/bash dev
 echo "Setting password for 'dev'"
 echo "dev:password" | sudo chpasswd  # Replace 'password' with a secure password
 sudo usermod -aG sudo dev  # Add user to sudo group (if necessary)
-
-# # Configure Git (set up user information for Git commits)
-# echo "Configuring Git user"
-# sudo -u dev git config --global user.name "Dev User"
-# sudo -u dev git config --global user.email "dev@example.com"  # Replace with actual email
 
 # ------------ Tailscale ------------ 
 # Install Tailscale for remote network access
@@ -54,7 +50,7 @@ sleep 2
 cansend can0 000#11.22.33.44
 echo "CAN test completed. Check the candump output for received data."
 
-# ------------ Wifi ------------ 
+# ------------ WiFi ------------ 
 # # Connect to Wifi (if needed, replace <ESSID_NAME> and <ESSID_PASSWORD>)
 # # Replace these with the correct SSID and password for your network
 # echo "Connecting to WiFi..."
@@ -80,6 +76,7 @@ mkdir ros2_ws
 cd ros2_ws
 colcon build --symlink-install
 
+# ------------ foxglove ------------ 
 # # Install foxglove dependencies
 # sudo apt install -y ros-humble-foxglove-bridge
 
@@ -87,15 +84,24 @@ colcon build --symlink-install
 echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
 
+# ------------ git ------------ 
 # Install Git (if not already installed)
 sudo apt install -y git
 
-# Initialize git repository
-git init
+# # Configure Git (set up user information for Git commits)
+# echo "Configuring Git user"
+# sudo -u dev git config --global user.name "Dev User"
+# sudo -u dev git config --global user.email "dev@example.com"  # Replace with actual email
 
+# # Initialize git repository
+# git init
+
+# ------------ ssh key ------------ 
 # # Generate SSH key and link to GitHub (document the steps)
 # echo "Follow the instructions to generate SSH key and add to GitHub: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
 
+
+# ------------ ROS 2 GNSS ------------ 
 # Install differential GNSS package
 echo "Installing differential GNSS package"
 cd ~/ros2_ws/src
@@ -124,6 +130,6 @@ colcon build --packages-select ublox_dgnss
 # Source the ROS2 workspace
 source ~/ros2_ws/install/setup.bash
 
-
+# ------------ The end ------------ 
 # Final steps: Done, restart terminal to apply changes
 echo "Setup complete! Restart the terminal to apply environment settings."
