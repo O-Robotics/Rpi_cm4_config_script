@@ -37,12 +37,12 @@ sudo apt-get install -y can-utils
 # Set up CAN interface
 echo "Configuring CAN interface..."
 sudo ip link set can0 up type can bitrate 1000000
-sudo ifconfig can0 txqueuelen 65536
+sudo ipconfig can0 txqueuelen 65536
 
 # Test CAN bus communication
 echo "Testing CAN bus communication..."
 dmesg | grep spi0
-ifconfig can0
+ipconfig can0
 
 # Test sending and receiving CAN data
 candump can0 &  # Start receiving data in the background
@@ -56,15 +56,15 @@ echo "CAN test completed. Check the candump output for received data."
 # echo "Connecting to WiFi..."
 # sudo nmcli dev wifi connect <ESSID_NAME> password <ESSID_PASSWORD>
 
-# ------------ Modem ------------ 
-# Setup Modem (for 4G modem connection)
-sudo apt-get install minicom
-sudo minicom -D /dev/ttyUSB2
-echo "Enter the following commands to configure the modem:"
-echo "ATE1"
-echo "AT+CUSBPIDSWITCH=9011,1,1"
-echo "Press ctrl-A X to exit minicom"
-sudo dhclient -v usb0
+# # ------------ Modem ------------ 
+# # Setup Modem (for 4G modem connection)
+# sudo apt-get install minicom
+# sudo minicom -D /dev/ttyUSB2
+# echo "Enter the following commands to configure the modem:"
+# echo "ATE1"
+# echo "AT+CUSBPIDSWITCH=9011,1,1"
+# echo "Press ctrl-A X to exit minicom"
+# sudo dhclient -v usb0
 
 # ------------ ROS 2 ------------ 
 # Install ROS2 Humble
