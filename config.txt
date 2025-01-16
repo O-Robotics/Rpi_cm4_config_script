@@ -1,5 +1,8 @@
 # Enable USB OTG (to support USB host mode)
-dtoverlay=dwc2,dr_mode=host
+dtoverlay=dwc2
+dr_mode=host
+dtparam=usb=on
+
 
 # Set HDMI output to 720p
 hdmi_group=1
