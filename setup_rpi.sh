@@ -34,6 +34,10 @@ sudo tailscale up
 echo "Installing CAN utilities..."
 sudo apt-get install -y can-utils
 
+# Bring CAN interface down if it's already up
+echo "Bringing can0 down..."
+sudo ip link set can0 down
+
 # Set up CAN interface
 echo "Configuring CAN interface..."
 sudo ip link set can0 up type can bitrate 1000000
