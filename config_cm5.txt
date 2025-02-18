@@ -3,8 +3,10 @@ kernel=vmlinuz
 cmdline=cmdline.txt
 initramfs initrd.img followkernel
 
-# Enable the audio output, I2C and SPI interfaces on the GPIO header
+# Enable audio output
 dtparam=audio=on
+
+# Enable I2C and SPI interfaces on the GPIO header
 dtparam=i2c_arm=on
 dtparam=spi=on
 
@@ -18,10 +20,9 @@ dtoverlay=uart5
 # Enable SPI and configure CAN bus
 dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
 
-# Enable Ethernet for CM5 (CM4 used different overlays)
-dtoverlay=rpivid-v4l2
+# Enable Ethernet for CM5
 dtoverlay=mdio-gpio  # Ensures MDIO is enabled for Ethernet
-dtoverlay=dwc2,dr_mode=host  # USB controller for CM5
+dtoverlay=rpivid-v4l2  # Video codec hardware acceleration
 
 # Ethernet PHY reset (CM5 uses updated networking settings)
 dtparam=eth_led0=14
@@ -30,15 +31,16 @@ dtparam=eth_led1=15
 # Disable overscan to avoid display issues
 disable_overscan=1
 
-# Enable full KMS graphics and fix memory allocation issues
+# Enable full KMS graphics with improved memory allocation
 dtoverlay=vc4-kms-v3d,cma-128
 disable_fw_kms_setup=1
+max_framebuffers=2
 
-# Enable PCIe for NVMe SSD (Optional, but necessary if using NVMe)
+# Enable PCIe for NVMe SSD (Only if using NVMe)
 dtparam=pciex1
 
 [cm5]
-# Enable USB2 outputs on the IO board (CM5 equivalent of CM4 setting)
+# Enable USB2 outputs on the IO board (for USB host mode)
 dtoverlay=dwc2,dr_mode=host
 dtparam=usb=on
 
