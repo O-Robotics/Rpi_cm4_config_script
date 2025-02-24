@@ -82,11 +82,14 @@ echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
 source /opt/ros/humble/setup.bash
 
-
 # ------------ ROS 2 Dependencies------------ 
 # Install ROS2 Humble related packages
 sudo apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
 sudo apt install -y python3-colcon-common-extensions
+
+
+sudo rosdep init
+rosdep update
 
 # Set up ROS2 workspace
 mkdir ros2_ws
