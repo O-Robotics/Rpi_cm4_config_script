@@ -74,6 +74,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 # Install base and dev tools
 sudo apt install -y ros-humble-ros-base
 sudo apt install -y ros-dev-tools
+sudo apt install -y python3-rosdep
 
 # Set up ROS 2 environment automatically on terminal start
 echo "Setting up ROS 2 environment"
@@ -83,7 +84,7 @@ source /opt/ros/humble/setup.bash
 
 
 # ------------ ROS 2 Dependencies------------ 
-# Install ROS2 Humble
+# Install ROS2 Humble related packages
 sudo apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-xacro
 sudo apt install -y python3-colcon-common-extensions
 
