@@ -47,6 +47,12 @@ sudo locale-gen en_US en_US.UTF-8
 sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 export LANG=en_US.UTF-8
 
+
+# 🔐 Fix expired ROS 2 GPG key
+print_info "Refreshing ROS 2 GPG key (fixes EXPKEYSIG issue)"
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo tee /usr/share/keyrings/ros-archive-keyring.gpg > /dev/null
+
+
 # Add ROS 2 repository and key (Humble assumed)
 print_info "Setting up ROS 2 source (Ubuntu 22.04 only)"
 sudo add-apt-repository universe -y
