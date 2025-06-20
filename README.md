@@ -1,4 +1,15 @@
 ### Setup of Rpi
+
+
+```
+chmod +x rpi_full_setup.sh
+sudo ./rpi_full_setup.sh
+```
+This repo needs to be update. `rpi_full_setup` is the latest one. It will create user `dev` and install ROS2 and dependencies
+
+
+
+
 [Write image to Raspberry Pi ](https://orobotics.sharepoint.com/:w:/s/AMRSweeper/EYyAcXdbdvBDn3S_FSLEkB8BfrLMU5o2DUBJO345Z8hJNw?e=cCnbcv)
 - `Config.txt` is for Rpi hardware level
 - Script is for software level
@@ -26,3 +37,5 @@ sudo apt-get install minicom
 sudo minicom -D /dev/ttyUSB2
 sudo dhclient -v usb0
 ```
+
+
