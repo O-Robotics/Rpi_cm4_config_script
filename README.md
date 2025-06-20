@@ -12,7 +12,10 @@ Please run this two lines one by one:
 
 ![image](https://github.com/user-attachments/assets/b6c74c41-43a5-4c67-9e4b-d39052ed00d8)
 
-
+```
+chmod +x dev_setup.sh
+./dev_setup.sh
+```
 
 
 [Write image to Raspberry Pi ](https://orobotics.sharepoint.com/:w:/s/AMRSweeper/EYyAcXdbdvBDn3S_FSLEkB8BfrLMU5o2DUBJO345Z8hJNw?e=cCnbcv)
