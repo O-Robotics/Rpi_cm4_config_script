@@ -29,7 +29,7 @@ print_success "User '$DEV_USERNAME' created with password '$DEV_PASSWORD'"
 # Step 3: Create dev_setup.sh inside dev's home
 print_info "Generating setup script at /home/$DEV_USERNAME/dev_setup.sh"
 
-cat << 'EOF' | sudo tee /home/$DEV_USERNAME/dev_setup.sh > /dev/null
+cat << EOF | sudo tee /home/$DEV_USERNAME/dev_setup.sh > /dev/null
 #!/bin/bash
 set -e
 trap 'echo "❌ Dev setup interrupted at line $LINENO"; exit 1' ERR
