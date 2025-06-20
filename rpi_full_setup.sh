@@ -57,6 +57,7 @@ echo "deb [arch=\$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-
 
 sudo apt update
 sudo apt install -y ros-humble-ros-base ros-dev-tools python3-rosdep python3-colcon-common-extensions
+sudo apt install -y ros-humble-ros-environment
 
 # Initialize rosdep
 print_info "🤖 Initializing rosdep"
