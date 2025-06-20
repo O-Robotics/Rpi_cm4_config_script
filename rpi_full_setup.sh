@@ -50,6 +50,7 @@ export LANG=en_US.UTF-8
 
 # Add ROS 2 Humble source
 print_info "🤖 Setting up ROS 2 source (Ubuntu 22.04)"
+sudo rm -f /etc/apt/sources.list.d/ros2.list
 sudo add-apt-repository universe -y
 sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo tee /usr/share/keyrings/ros-archive-keyring.gpg > /dev/null
 echo "deb [arch=\$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu \$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
