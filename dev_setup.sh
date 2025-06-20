@@ -31,7 +31,7 @@ rosdep update
 
 # Setup workspace
 print_info "🤖 Setting up ROS 2 workspace"
-WS_ROOT=~/Documents/ORobotics
+WS_ROOT=~/ORobotics
 WS_NAME=localization_ws
 WS_PATH=$WS_ROOT/$WS_NAME
 mkdir -p $WS_PATH/src
