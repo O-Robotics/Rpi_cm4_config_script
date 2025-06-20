@@ -5,7 +5,12 @@
 chmod +x rpi_full_setup.sh
 sudo ./rpi_full_setup.sh
 ```
-This repo needs to be update. `rpi_full_setup` is the latest one. It will create user `dev` and install ROS2 and dependencies
+This repo needs to be update. `rpi_full_setup` is the latest one. It will first create user `dev` and then run scripts in `dev` to install ROS2 and dependencies.
+### Create User & run script
+Please run this two lines one by one:
+
+
+![image](https://github.com/user-attachments/assets/b6c74c41-43a5-4c67-9e4b-d39052ed00d8)
 
 
 
