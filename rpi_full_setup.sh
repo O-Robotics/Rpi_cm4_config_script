@@ -32,10 +32,10 @@ print_info "Generating setup script at /home/$DEV_USERNAME/dev_setup.sh"
 cat << EOF | sudo tee /home/$DEV_USERNAME/dev_setup.sh > /dev/null
 #!/bin/bash
 set -e
-trap 'echo "❌ Dev setup interrupted at line $LINENO"; exit 1' ERR
+trap 'echo "❌ Dev setup interrupted at line \$LINENO"; exit 1' ERR
 
-print_info() { echo -e "\e[34m🤖 $1\e[0m"; }
-print_success() { echo -e "\e[32m✔ $1 completed successfully\e[0m"; }
+print_info() { echo -e "\e[34m🤖 \$1\e[0m"; }
+print_success() { echo -e "\e[32m✔ \$1\e[0m"; }
 
 # Install essentials
 print_info "🤖 Installing essential tools"
@@ -66,9 +66,10 @@ rosdep update
 
 # Setup workspace
 print_info "🤖 Setting up ROS 2 workspace"
-WS_ROOT=~/Documents/ORobotics
+WS_ROOT=~/ORobotics
 WS_NAME=localization_ws
 WS_PATH=\$WS_ROOT/\$WS_NAME
+[ -d "\$WS_PATH" ] && print_info "🤖 Removing existing workspace at \$WS_PATH" && rm -rf "\$WS_PATH"
 mkdir -p \$WS_PATH/src
 cd \$WS_PATH/src
 
@@ -110,7 +111,7 @@ print_info "🤖 Reloading udev rules"
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
-print_success "🤖\n🟢 Dev environment setup complete!"
+print_success "🤖\\n🟢 Dev environment setup complete!"
 print_info "✅ You can verify: ls -l /dev/imu_usb"
 EOF
 
