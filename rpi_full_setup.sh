@@ -73,6 +73,9 @@ WS_PATH=\$WS_ROOT/\$WS_NAME
 mkdir -p \$WS_PATH/src
 cd \$WS_PATH/src
 
+# Source ROS 2 now to prepare for rosdep & colcon
+source /opt/ros/humble/setup.bash
+
 # Clone necessary packages
 print_info "🤖 Cloning GNSS, IMU, and Sweeper description packages"
 git clone https://github.com/O-Robotics/ublox_dgnss.git
