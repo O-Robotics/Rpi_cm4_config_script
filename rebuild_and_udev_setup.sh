@@ -7,7 +7,7 @@ REPOS=(
     "O-Robotics/ublox_dgnss"
     "tilk/rtcm_msgs"
     "O-Robotics/wit_ros2_imu"
-    "O-Robotics/AMR-Sweeper_description"
+    "O-Robotics/amr_sweeper_description"
 )
 
 # === FUNCTIONS ===
@@ -77,7 +77,8 @@ print_info "Building: rtcm_msgs"
 colcon build --packages-select rtcm_msgs
 
 print_info "Building: ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_cli"
-colcon build --packages-select ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_cli
+colcon build --packages-select ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_client_node
+
 
 print_info "Building: ublox_dgnss"
 colcon build --packages-select ublox_dgnss
@@ -86,7 +87,7 @@ print_info "Building: wit_ros2_imu"
 colcon build --packages-select wit_ros2_imu
 
 print_info "Building: AMR-Sweeper_description"
-colcon build --packages-select AMR-Sweeper_description
+colcon build --packages-select amr_sweeper_description
 
 print_success "🛠️ All specified ROS 2 packages built successfully!"
 
