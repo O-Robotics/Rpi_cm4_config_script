@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# need mannually clone repo
-
 # === CONFIGURATION ===
 WS_PATH=~/ORobotics/localization_ws
 
@@ -26,6 +24,10 @@ source /opt/ros/humble/setup.bash
 
 print_info "Switching to workspace: $WS_PATH"
 cd "$WS_PATH"
+
+# === CLEAN BUILD/INSTALL/LOG ONCE AT THE BEGINNING ===
+print_info "Cleaning build/, install/, log/"
+rm -rf build/ install/ log/
 
 # === BUILD ROS PACKAGES STEP BY STEP ===
 print_info "Building: rtcm_msgs"
