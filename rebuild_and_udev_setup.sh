@@ -2,6 +2,13 @@
 
 # === CONFIGURATION ===
 WS_PATH=~/ORobotics/localization_ws
+SRC_PATH="$WS_PATH/src"
+REPOS=(
+    "O-Robotics/ublox_dgnss"
+    "tilk/rtcm_msgs"
+    "O-Robotics/wit_ros2_imu"
+    "O-Robotics/AMR-Sweeper_description"
+)
 
 # === FUNCTIONS ===
 print_info() {
@@ -16,10 +23,41 @@ udev_rule_exists() {
     local rule_file=$1
     local match_str=$2
     if [ -f "$rule_file" ] && grep -q "$match_str" "$rule_file"; then
-        return 0  # exists
+        return 0
     else
-        return 1  # not exists
+        return 1
     fi
+}
+
+clone_or_update_repo() {
+    local repo_full=$1
+    local repo_name=$(basename "$repo_full")
+    local repo_dir="$SRC_PATH/$repo_name"
+    if [ -d "$repo_dir/.git" ]; then
+        cd "$repo_dir"
+        print_info "Checking for updates in $repo_name"
+        git fetch
+        LOCAL=$(git rev-parse @)
+        REMOTE=$(git rev-parse @{u})
+        BASE=$(git merge-base @ @{u})
+
+        if [ "$LOCAL" = "$REMOTE" ]; then
+            print_info "$repo_name is up-to-date"
+        elif [ "$LOCAL" = "$BASE" ]; then
+            print_info "$repo_name has updates, pulling..."
+            git pull
+            print_success "$repo_name updated"
+        elif [ "$REMOTE" = "$BASE" ]; then
+            print_info "$repo_name has local commits ahead of remote, skipping pull"
+        else
+            print_info "$repo_name has diverged; manual resolution needed"
+        fi
+    else
+        print_info "Cloning $repo_name"
+        git clone "https://github.com/$repo_full.git" "$repo_dir"
+        print_success "$repo_name cloned"
+    fi
+    cd "$WS_PATH"
 }
 
 # === START ===
@@ -28,6 +66,11 @@ source /opt/ros/humble/setup.bash
 
 print_info "Switching to workspace: $WS_PATH"
 cd $WS_PATH
+
+# === CLONE OR UPDATE REPOS ===
+for repo in "${REPOS[@]}"; do
+    clone_or_update_repo "$repo"
+done
 
 # === BUILD ROS PACKAGES STEP BY STEP ===
 print_info "Building: rtcm_msgs"
@@ -45,7 +88,7 @@ colcon build --packages-select wit_ros2_imu
 print_info "Building: AMR-Sweeper_description"
 colcon build --packages-select AMR-Sweeper_description
 
-print_success "All specified ROS 2 packages built successfully!"
+print_success "🛠️ All specified ROS 2 packages built successfully!"
 
 # === SETUP UDEV RULES ===
 GNSS_RULE_FILE="/etc/udev/rules.d/99-ublox-gnss.rules"
@@ -72,5 +115,5 @@ print_info "Reloading udev rules"
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
-print_success "udev rules checked, updated, and reloaded!"
-print_info "You can verify: ls -l /dev/imu_usb"
+print_success "🟢 udev rules checked, updated, and reloaded!"
+print_info "✅ You can verify: ls -l /dev/imu_usb"
