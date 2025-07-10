@@ -1,23 +1,14 @@
 #!/bin/bash
 
+# need mannually clone repo
+
 # === CONFIGURATION ===
 WS_PATH=~/ORobotics/localization_ws
-SRC_PATH="$WS_PATH/src"
-REPOS=(
-    "O-Robotics/ublox_dgnss"
-    "tilk/rtcm_msgs"
-    "O-Robotics/wit_ros2_imu"
-    "O-Robotics/amr_sweeper_description"
-)
 
 # === FUNCTIONS ===
-print_info() {
-    echo -e "\033[1;34m[INFO]\033[0m $1"
-}
-
-print_success() {
-    echo -e "\033[1;32m[SUCCESS]\033[0m $1"
-}
+print_info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
+print_success() { echo -e "\033[1;32m[SUCCESS]\033[0m $1"; }
+print_error() { echo -e "\033[1;31m[ERROR]\033[0m $1"; }
 
 udev_rule_exists() {
     local rule_file=$1
@@ -29,65 +20,28 @@ udev_rule_exists() {
     fi
 }
 
-clone_or_update_repo() {
-    local repo_full=$1
-    local repo_name=$(basename "$repo_full")
-    local repo_dir="$SRC_PATH/$repo_name"
-    if [ -d "$repo_dir/.git" ]; then
-        cd "$repo_dir"
-        print_info "Checking for updates in $repo_name"
-        git fetch
-        LOCAL=$(git rev-parse @)
-        REMOTE=$(git rev-parse @{u})
-        BASE=$(git merge-base @ @{u})
-
-        if [ "$LOCAL" = "$REMOTE" ]; then
-            print_info "$repo_name is up-to-date"
-        elif [ "$LOCAL" = "$BASE" ]; then
-            print_info "$repo_name has updates, pulling..."
-            git pull
-            print_success "$repo_name updated"
-        elif [ "$REMOTE" = "$BASE" ]; then
-            print_info "$repo_name has local commits ahead of remote, skipping pull"
-        else
-            print_info "$repo_name has diverged; manual resolution needed"
-        fi
-    else
-        print_info "Cloning $repo_name"
-        git clone "https://github.com/$repo_full.git" "$repo_dir"
-        print_success "$repo_name cloned"
-    fi
-    cd "$WS_PATH"
-}
-
 # === START ===
 print_info "Sourcing ROS 2 Humble environment"
 source /opt/ros/humble/setup.bash
 
 print_info "Switching to workspace: $WS_PATH"
-cd $WS_PATH
-
-# === CLONE OR UPDATE REPOS ===
-for repo in "${REPOS[@]}"; do
-    clone_or_update_repo "$repo"
-done
+cd "$WS_PATH"
 
 # === BUILD ROS PACKAGES STEP BY STEP ===
 print_info "Building: rtcm_msgs"
-colcon build --packages-select rtcm_msgs
+colcon build --packages-select rtcm_msgs || { print_error "Failed to build rtcm_msgs"; exit 1; }
 
-print_info "Building: ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_cli"
-colcon build --packages-select ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_client_node
-
+print_info "Building: ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_client_node"
+colcon build --packages-select ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_client_node || { print_error "Failed to build ublox components"; exit 1; }
 
 print_info "Building: ublox_dgnss"
-colcon build --packages-select ublox_dgnss
+colcon build --packages-select ublox_dgnss || { print_error "Failed to build ublox_dgnss"; exit 1; }
 
 print_info "Building: wit_ros2_imu"
-colcon build --packages-select wit_ros2_imu
+colcon build --packages-select wit_ros2_imu || { print_error "Failed to build wit_ros2_imu"; exit 1; }
 
-print_info "Building: AMR-Sweeper_description"
-colcon build --packages-select amr_sweeper_description
+print_info "Building: amr_sweeper_description"
+colcon build --packages-select amr_sweeper_description || { print_error "Failed to build amr_sweeper_description"; exit 1; }
 
 print_success "🛠️ All specified ROS 2 packages built successfully!"
 
