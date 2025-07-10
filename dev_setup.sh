@@ -42,7 +42,7 @@ print_info "🤖 Cloning GNSS, IMU, and Sweeper description packages"
 git clone https://github.com/O-Robotics/ublox_dgnss.git
 git clone https://github.com/tilk/rtcm_msgs.git
 git clone https://github.com/O-Robotics/wit_ros2_imu.git
-git clone https://github.com/O-Robotics/AMR-Sweeper_description.git
+git clone https://github.com/O-Robotics/amr_sweeper_description.git
 
 # Install dependencies
 print_info "🤖 Installing ROS package dependencies"
@@ -55,7 +55,7 @@ colcon build --packages-select rtcm_msgs
 colcon build --packages-select ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_node ublox_nav_sat_fix_hp_node ntrip_client_node
 colcon build --packages-select ublox_dgnss
 colcon build --packages-select wit_ros2_imu
-colcon build --packages-select AMR-Sweeper_description
+colcon build --packages-select amr_sweeper_description
 
 # Source on terminal start
 print_info "🤖 Adding ROS 2 source to .bashrc"
