@@ -7,30 +7,39 @@ trap 'echo "❌ Script interrupted at line $LINENO"; exit 1' ERR
 # -------------------------------
 DEV_USERNAME=dev
 DEV_PASSWORD=password
+ROB_USERNAME=rob
+ROB_PASSWORD=robot
 
 print_info() { echo -e "\e[34m🤖 $1\e[0m"; }
 print_success() { echo -e "\e[32m✔ $1 completed successfully\e[0m"; }
 print_warning() { echo -e "\e[33m⚠ $1\e[0m"; }
 
-# Step 1: Delete existing user if exists
-if id "$DEV_USERNAME" &>/dev/null; then
-    print_warning "User '$DEV_USERNAME' already exists. Deleting..."
-    sudo pkill -u "$DEV_USERNAME" || true
-    sudo deluser --remove-home "$DEV_USERNAME"
-    print_success "User '$DEV_USERNAME' deleted"
-fi
+create_user() {
+    local username=$1
+    local password=$2
+    if id "$username" &>/dev/null; then
+        print_warning "User '$username' already exists. Deleting..."
+        sudo pkill -u "$username" || true
+        sudo deluser --remove-home "$username"
+        print_success "User '$username' deleted"
+    fi
+    print_info "Creating user '$username'"
+    sudo useradd -m -s /bin/bash "$username"
+    echo "$username:$password" | sudo chpasswd
+    sudo usermod -aG sudo "$username"
+    print_success "User '$username' created with password '$password'"
+}
 
-# Step 2: Create fresh dev user
-print_info "Creating user '$DEV_USERNAME'"
-sudo useradd -m -s /bin/bash "$DEV_USERNAME"
-echo "$DEV_USERNAME:$DEV_PASSWORD" | sudo chpasswd
-sudo usermod -aG sudo "$DEV_USERNAME"
-print_success "User '$DEV_USERNAME' created with password '$DEV_PASSWORD'"
+# Step 1: Create dev user
+create_user "$DEV_USERNAME" "$DEV_PASSWORD"
 
-# Step 3: Create dev_setup.sh inside dev's home
-print_info "Generating setup script at /home/$DEV_USERNAME/dev_setup.sh"
+# Step 2: Create rob user
+create_user "$ROB_USERNAME" "$ROB_PASSWORD"
 
-cat << 'EOF' | sudo tee /home/$DEV_USERNAME/dev_setup.sh > /dev/null
+# Step 3: Generate dev_setup.sh in both dev and rob home
+for USER in "$DEV_USERNAME" "$ROB_USERNAME"; do
+    print_info "Generating setup script at /home/$USER/dev_setup.sh"
+    cat << 'EOF' | sudo tee "/home/$USER/dev_setup.sh" > /dev/null
 #!/bin/bash
 set -e
 trap 'echo "❌ Dev setup interrupted at line \$LINENO"; exit 1' ERR
@@ -130,13 +139,15 @@ echo "For physical robot:"
 echo "ros2 launch amr_sweeper_bringup bringup.launch.py"
 EOF
 
-# Step 4: Set permissions
-sudo chown "$DEV_USERNAME:$DEV_USERNAME" "/home/$DEV_USERNAME/dev_setup.sh"
-sudo chmod +x "/home/$DEV_USERNAME/dev_setup.sh"
-
-print_success "dev_setup.sh created and made executable"
+    sudo chown "$USER:$USER" "/home/$USER/dev_setup.sh"
+    sudo chmod +x "/home/$USER/dev_setup.sh"
+    print_success "dev_setup.sh created and made executable for $USER"
+done
 
 # Final instruction
-echo -e "\n🟢 \e[1mNow switch to the '$DEV_USERNAME' user and run:\e[0m"
+echo -e "\n🟢 \e[1mNow switch to the user and run:\e[0m"
 echo -e "    su - $DEV_USERNAME"
+echo -e "    ./dev_setup.sh"
+echo -e "\nOR for production:\n"
+echo -e "    su - $ROB_USERNAME"
 echo -e "    ./dev_setup.sh\n"
