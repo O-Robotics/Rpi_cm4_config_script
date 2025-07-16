@@ -1,4 +1,17 @@
 
+# Repo contains:
+- `Config.txt` for Rpi hardware level
+- Scripts (only use `rpi_full_setup.sh` or `dev_setup.sh` currently) for software level
+    - You need to change the password for `dev` before running the script.
+    - Do not contain: tailscale, foxglove, ssh key, minicom
+    - Contains:ROS2 humble, ROS 2 control, GNSS, IMU packages
+
+
+ 
+## Ubuntu 22.04 install on RPI
+[Write image to Raspberry Pi](https://orobotics.sharepoint.com/:w:/s/AMRSweeper/EYyAcXdbdvBDn3S_FSLEkB8BfrLMU5o2DUBJO345Z8hJNw?e=cCnbcv)
+
+
 #  Raspberry Pi Full Setup Script (`rpi_full_setup.sh`)
 
 ##  Purpose
@@ -98,15 +111,3 @@ colcon list               # Check workspace packages
 - For other hardware, adjust the udev rules accordingly.
 - Remember to **change the default password** for security in production use.
 
-
-
-
-
-
-[Write image to Raspberry Pi ](https://orobotics.sharepoint.com/:w:/s/AMRSweeper/EYyAcXdbdvBDn3S_FSLEkB8BfrLMU5o2DUBJO345Z8hJNw?e=cCnbcv)
-- `Config.txt` is for Rpi hardware level
-- Script is for software level
-  - `Setup_rpi.sh`: It contains ROS 2 and dependencies
-    - You need to change the password for `dev` before running the script.
-    - Do not contain: foxglove, ssh key, minicom
-    - Contain: ROS 2 control, GNSS packages
