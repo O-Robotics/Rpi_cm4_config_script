@@ -30,7 +30,7 @@ print_success "User '$DEV_USERNAME' created with password '$DEV_PASSWORD'"
 # Step 3: Create dev_setup.sh inside dev's home
 print_info "Generating setup script at /home/$DEV_USERNAME/dev_setup.sh"
 
-cat << EOF | sudo tee /home/$DEV_USERNAME/dev_setup.sh > /dev/null
+cat << 'EOF' | sudo tee /home/$DEV_USERNAME/dev_setup.sh > /dev/null
 #!/bin/bash
 set -e
 trap 'echo "❌ Dev setup interrupted at line \$LINENO"; exit 1' ERR
@@ -51,14 +51,20 @@ export LANG=en_US.UTF-8
 
 # Add ROS 2 Humble source
 print_info "Setting up ROS 2 source (Ubuntu 22.04)"
-sudo rm -f /etc/apt/sources.list.d/ros2.list
 sudo add-apt-repository universe -y
+sudo rm -f /etc/apt/sources.list.d/ros2.list
 sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo tee /usr/share/keyrings/ros-archive-keyring.gpg > /dev/null
-echo "deb [arch=\$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu \$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+echo "deb [arch=\$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu \$(lsb_release -cs) main" \
+  | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 sudo apt update
-sudo apt install -y ros-humble-ros-base ros-dev-tools python3-rosdep python3-colcon-common-extensions
-sudo apt install -y ros-humble-ros-environment
+sudo apt install -y ros-humble-ros-base ros-dev-tools python3-rosdep python3-colcon-common-extensions ros-humble-ros-environment
+
+# Install gazebo & ROS2 Control dependencies
+print_info "Installing Gazebo and ROS2 Control dependencies"
+sudo apt install -y ros-humble-ros-ignition
+sudo apt install -y ros-humble-ros2-control ros-humble-ros2-controllers ros-humble-ign-ros2-control \
+    ros-humble-xacro ros-humble-joy ros-humble-twist-mux ros-humble-joint-state-broadcaster ros-humble-joint-state-publisher
 
 # Initialize rosdep
 print_info "Initializing rosdep"
@@ -67,21 +73,21 @@ rosdep update
 
 # Setup workspace
 print_info "Setting up ROS 2 workspace"
-WS_ROOT=~/ORobotics
-WS_NAME=localization_ws
+WS_ROOT=~/O_Robotics
+WS_NAME=ros2_ws
 WS_PATH=\$WS_ROOT/\$WS_NAME
-[ -d "\$WS_PATH" ] && print_info "Removing existing workspace at \$WS_PATH" && rm -rf "\$WS_PATH"
 mkdir -p \$WS_PATH/src
 cd \$WS_PATH/src
 
 source /opt/ros/humble/setup.bash
 
 # Clone necessary packages
-print_info "Cloning GNSS, IMU, and Sweeper description packages"
+print_info "Cloning GNSS, IMU, Sweeper description, and ROS2 Control packages"
 git clone https://github.com/O-Robotics/ublox_dgnss.git
 git clone https://github.com/tilk/rtcm_msgs.git
 git clone https://github.com/O-Robotics/wit_ros2_imu.git
 git clone https://github.com/O-Robotics/amr_sweeper_description.git
+git clone https://github.com/O-Robotics/ROS2_Control.git
 
 # Install dependencies
 print_info "Installing ROS package dependencies"
@@ -95,6 +101,7 @@ colcon build --packages-select ublox_ubx_interfaces ublox_ubx_msgs ublox_dgnss_n
 colcon build --packages-select ublox_dgnss
 colcon build --packages-select wit_ros2_imu
 colcon build --packages-select amr_sweeper_description
+colcon build --packages-select ROS2_Control
 
 # Source on terminal start
 print_info "Adding ROS 2 source to .bashrc"
@@ -115,7 +122,12 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger
 
 print_success "🟢 Dev environment setup complete!"
-print_info "✅ You can verify: ls -l /dev/imu_usb"
+print_info "✅ Example commands to run:"
+echo "source install/setup.bash"
+echo "ros2 launch amr_sweeper_bringup bringup.launch.py use_sim_time:=true"
+echo "ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r /cmd_vel:=/diff_cont/cmd_vel_unstamped"
+echo "For physical robot:"
+echo "ros2 launch amr_sweeper_bringup bringup.launch.py"
 EOF
 
 # Step 4: Set permissions
