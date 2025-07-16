@@ -1,8 +1,8 @@
 
 # Repo contains:
 - `Config.txt` for Rpi hardware level
-- Scripts (only use `rpi_full_setup.sh` or `dev_setup.sh` currently) for software level
-    - You need to change the password for `dev` before running the script.
+- Scripts (only use `rpi_full_setup.sh`currently) for software level
+    - You need to change the password for `dev` and `rob` before running the script.  
     - Do not contain: tailscale, foxglove, ssh key, minicom
     - Contains:ROS2 humble, ROS 2 control, GNSS, IMU packages
 
@@ -14,16 +14,29 @@
 
 #  Raspberry Pi Full Setup Script (`rpi_full_setup.sh`)
 
-##  Purpose
+## Purpose
 
-This repository provides **two scripts** to quickly set up and recover a clean ROS 2 development environment on a Raspberry Pi (tested on Ubuntu 22.04, RPI CM4):
+This repository provides **two scripts** to quickly set up and recover a clean ROS 2 development environment on a Raspberry Pi (tested on Ubuntu 22.04, RPI CM4), now supporting **separate developer and production users**.
 
 | Script             | Role                                                                                              |
 |---------------------|--------------------------------------------------------------------------------------------------|
-| `rpi_full_setup.sh` | Run as **root**, deletes & recreates the `dev` user, installs ROS 2 Humble, GNSS/IMU packages, and sets up the dev environment from scratch. |
-| `dev_setup.sh`      | Run as **dev user**, only sets up ROS 2 packages and workspace (no user deletion), useful for re-downloading, rebuilding, or recovering the environment. |
+| `rpi_full_setup.sh` | Run as **root**, deletes & recreates the `dev` and `rob` users, installs ROS 2 Humble, ROS 2 Control, GNSS/IMU packages, and sets up the dev environment from scratch. |
+| `dev_setup.sh`      | Run as **dev** or **rob** user, sets up ROS 2 packages and workspace (no user deletion), useful for re-downloading, rebuilding, or recovering the environment. |
 
 ---
+
+## Users Setup and Purpose
+
+| User  | Purpose                                                                |
+|-------|------------------------------------------------------------------------|
+| `dev` | **Developer user:** for testing, development, debugging, experimental code. |
+| `rob` | **Robot/production user:** for running stable production code only.      |
+
+> ⚠️ **Recommended practice:**  
+> Use `dev` for all development work and reserve `rob` only for production runtime.
+
+---
+
 
 ##  How to Use
 
@@ -33,7 +46,7 @@ This repository provides **two scripts** to quickly set up and recover a clean R
 # Run as root
 sudo bash rpi_full_setup.sh
 
-# Follow final instruction:
+# Follow instruction to setup dev:
 su - dev
 ./dev_setup.sh
 ```
@@ -77,10 +90,11 @@ This will:
 
 ##  Design Rationale
 
- Separate **root-level system management** and **dev-level ROS workspace**  
- Easy to **recreate the dev user & home** if corrupted  
- Easy to **rebuild only the workspace** if ROS or packages break  
- Clearly structured **step-by-step build**, including:
+1. Separate root-level system management and dev/rob-level ROS workspaces
+2. Provide clear separation between developer (dev) and production (rob) environments
+3. Allow easy recreate user & home if corrupted
+4. Enable workspace-only rebuilds without touching system users
+5. Clearly structured **step-by-step build**, including:
 - Stepwise `colcon build` per package group
 - Automatic `.bashrc` ROS source setup
 - udev rules for GNSS & IMU hardware
@@ -90,8 +104,10 @@ This will:
 ##  Parameters
 
 - **DEV_USERNAME**: default `dev`  
-- **DEV_PASSWORD**: default `password`  
-(change at the top of `rpi_full_setup.sh` if needed)
+- **DEV_PASSWORD**: default `password`
+- ROB_USERNAME: default rob
+- ROB_PASSWORD: default robot
+(change these at the top of rpi_full_setup.sh)
 
 ---
 
