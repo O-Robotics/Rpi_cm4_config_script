@@ -69,7 +69,8 @@ This will:
 |---------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | **System tools**    | curl, git, python3-pip, software-properties-common, can-utils, net-tools, locales, gnupg     | Same                                                                      |
 | **ROS 2 core**      | ros-humble-ros-base, ros-dev-tools, python3-rosdep, python3-colcon-common-extensions, ros-humble-ros-environment | Same                                                                      |
-| **ROS 2 packages**  | ublox_dgnss, rtcm_msgs, wit_ros2_imu, amr_sweeper_description (cloned + built)               | Same                                                                      |
+| **ROS 2 packages**  | ublox_dgnss, rtcm_msgs, wit_ros2_imu, amr_sweeper_description, ROS2_Control (cloned + built)               | Same                                                                      |
+| **Simulation & control dependencies** | ros-humble-ros-ignition, ros-humble-ros2-control, ros-humble-ros2-controllers, ros-humble-ign-ros2-control, ros-humble-xacro, ros-humble-joy, ros-humble-twist-mux, ros-humble-joint-state-broadcaster, ros-humble-joint-state-publisher | Same     
 | **udev rules**      | GNSS (ublox), IMU (USB, symlink to /dev/imu_usb)                                            | Same                                                                      |
 
 ---
@@ -101,6 +102,7 @@ After setup:
 ```bash
 ls -l /dev/imu_usb        # Check IMU symlink
 colcon list               # Check workspace packages
+ros2 launch amr_sweeper_bringup bringup.launch.py use_sim_time:=true  # Launch simulation
 ```
 
 ---
