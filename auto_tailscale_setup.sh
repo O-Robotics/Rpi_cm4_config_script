@@ -1,24 +1,29 @@
 #!/bin/bash
 set -e
 
-echo "Setting up Tailscale for auto-start..."
+echo "Setting up Tailscale auto-start (non-destructive)..."
 
-# Check if tailscaled is running
+# Check tailscale connection status
 if ! systemctl is-active --quiet tailscaled; then
-    echo "Error: tailscaled service is not running."
-    echo "Please run 'sudo tailscale up' and verify the connection before executing this script."
+    echo "Warning: tailscaled is not running. Please connect with 'sudo tailscale up' before proceeding."
     exit 1
 fi
 
-# Check if Tailscale has a valid IP address assigned
-TAILSCALE_IP=$(tailscale ip -4 2>/dev/null | head -n 1)
-if [[ -z "$TAILSCALE_IP" ]]; then
-    echo "Error: Tailscale is not connected or no IP assigned."
-    echo "Please run 'sudo tailscale up' and verify connection is established."
+if [[ -z $(tailscale ip -4 2>/dev/null | head -n 1) ]]; then
+    echo "Warning: Tailscale is running but not connected. Please check 'sudo tailscale up'."
     exit 1
 fi
 
-# Create systemd service to run 'tailscale up' after network is online
+# Step 1: Create systemd override safely
+sudo mkdir -p /etc/systemd/system/tailscaled.service.d
+
+cat <<EOF | sudo tee /etc/systemd/system/tailscaled.service.d/override.conf > /dev/null
+[Unit]
+After=network-online.target
+Wants=network-online.target
+EOF
+
+# Step 2: Create tailscale-up.service to re-run 'tailscale up' at boot
 cat <<EOF | sudo tee /etc/systemd/system/tailscale-up.service > /dev/null
 [Unit]
 Description=Tailscale Auto Connect
@@ -26,40 +31,18 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
+Type=oneshot
 ExecStart=/usr/bin/tailscale up
-Restart=on-failure
+RemainAfterExit=true
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# Modify tailscaled.service to wait for network before starting
-sudo systemctl edit tailscaled --full --force <<EOF
-[Unit]
-Description=Tailscale node agent
-Documentation=https://tailscale.com/kb/
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-ExecStart=/usr/sbin/tailscaled
-Restart=on-failure
-LimitNOFILE=1048576
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Reload systemd to apply changes
+# Step 3: Reload and enable
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
-
-# Enable services to run at boot
 sudo systemctl enable tailscaled
 sudo systemctl enable tailscale-up
 
-# Start services now
-sudo systemctl start tailscaled
-sudo systemctl start tailscale-up
-
-echo "Tailscale auto-start configuration complete."
+echo "Tailscale auto-start configuration complete. You can now reboot to verify."
