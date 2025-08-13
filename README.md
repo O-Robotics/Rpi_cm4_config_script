@@ -75,6 +75,14 @@ This will:
 - Update `.bashrc` with ROS 2 sourcing
 
 ---
+###  Use select_workspace.sh
+
+```
+chmod +r ~/scripts/select_workspace.sh
+
+source ~/scripts/select_workspace.sh
+
+```
 
 ## Installed Packages Comparison
 
