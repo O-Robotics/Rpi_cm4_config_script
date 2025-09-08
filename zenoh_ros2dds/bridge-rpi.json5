@@ -1,0 +1,13 @@
+// Minimal Zenoh ROS2DDS bridge config for RPi/Jetson endpoints
+// Replace 192.168.1.100 with your Zenoh router or simulation PC IP
+{
+  mode: "client",
+  connect: { endpoints: ["tcp/192.168.1.100:7447"] },
+
+  allow: {
+    topics: [
+      "/hardware_layer/imu/data",
+      "/hardware_layer/navsat"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+// PC-side Zenoh ROS2DDS bridge configuration (subscriber side)
+// Subscribes to topics coming from endpoints (RPi/Jetson) via Zenoh router.
+{
+  mode: "client",
+  connect: { endpoints: ["tcp/localhost:7447"] }, // assumes local zenohd
+
+  allow: {
+    topics: [
+      "/hardware_layer/imu/data",
+      "/hardware_layer/navsat"
+    ]
+  }
+}

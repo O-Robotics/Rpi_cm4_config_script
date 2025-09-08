@@ -1,0 +1,19 @@
+# Example systemd unit for Zenoh ROS2DDS bridge (RPi/Jetson)
+# Copy to /etc/systemd/system/zenoh-ros2dds.service and adjust paths/user if needed.
+
+[Unit]
+Description=Zenoh ROS2DDS Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dev
+Restart=on-failure
+RestartSec=2
+# Adjust the following paths if you installed a different version/arch
+ExecStart=/home/dev/zenoh_ros2dds/zenoh-bridge-ros2dds-1.5.1-aarch64-unknown-linux-gnu-standalone/ros2dds -c /home/dev/zenoh_ros2dds/bridge-rpi.json5
+WorkingDirectory=/home/dev/zenoh_ros2dds
+
+[Install]
+WantedBy=multi-user.target
